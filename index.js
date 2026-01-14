@@ -1,12 +1,12 @@
 const express = require("express");
 const cors = require("cors");
-const { v4: uuidv4 } = require("uuid"); // npm install uuid
+const { v4: uuidv4 } = require("uuid");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Başlangıç verileri (ID eklendi)
+// Initial data with unique IDs
 let coffeeDrinks = [
   {
     id: uuidv4(),
@@ -52,38 +52,44 @@ let coffeeDrinks = [
   },
 ];
 
-// 1. GET - Hepsini Listele
+// 1. GET - List All Coffee Drinks
 app.get("/api/v1/coffee-drinks", (req, res) => {
   res.json(coffeeDrinks);
 });
 
-// 2. POST - Yeni Kahve Türü Ekle
+// 2. POST - Add New Coffee Drink
 app.post("/api/v1/coffee-drinks", (req, res) => {
   const { name, icon, description } = req.body;
   const newDrink = { id: uuidv4(), name, icon, description };
-  console.log("📥 Yeni kahve geldi:", newDrink); // Bu satırı ekle
+  console.log("📥 New coffee added:", newDrink);
   coffeeDrinks.push(newDrink);
   res.status(201).json(newDrink);
 });
 
-// 3. PUT - Kahve Türünü Güncelle
-// index.js içindeki PUT kısmını bu şekilde değiştir:
+// 3. PUT - Update Coffee Drink
 app.put("/api/v1/coffee-drinks/:id", (req, res) => {
   const { id } = req.params;
   const { name, icon, description } = req.body;
 
-  let index = coffeeDrinks.findIndex((d) => d.id === id);
+  let found = false;
+  coffeeDrinks = coffeeDrinks.map((d) => {
+    if (d.id === id) {
+      found = true;
+      return { id, name, icon, description };
+    }
+    return d;
+  });
 
-  if (index !== -1) {
-    coffeeDrinks[index] = { id, name, icon, description };
-    res.json(coffeeDrinks[index]); // Başarılıysa JSON dönüyor
+  if (found) {
+    const updatedDrink = coffeeDrinks.find((d) => d.id === id);
+    console.log("🔄 Coffee updated:", updatedDrink);
+    res.json(updatedDrink);
   } else {
-    // HATA: .send yerine .json kullanıyoruz ki mobil uygulama çökmesin
-    res.status(404).json({ error: "Kahve bulunamadı", receivedId: id });
+    res.status(404).json({ error: "Coffee not found", receivedId: id });
   }
 });
 
-// 4. DELETE - Kahve Türünü Sil
+// 4. DELETE - Remove Coffee Drink
 app.delete("/api/v1/coffee-drinks/:id", (req, res) => {
   const { id } = req.params;
   const initialLength = coffeeDrinks.length;
@@ -91,14 +97,14 @@ app.delete("/api/v1/coffee-drinks/:id", (req, res) => {
   coffeeDrinks = coffeeDrinks.filter((d) => d.id !== id);
 
   if (coffeeDrinks.length < initialLength) {
-    res.status(204).send(); // Başarıyla silindi
+    console.log(`🗑️ Coffee deleted. ID: ${id}`);
+    res.status(204).send();
   } else {
-    // Silinemediyse JSON hata dönüyoruz (Mobil uygulama çökmesin diye)
     res
       .status(404)
-      .json({ error: "Silinecek kahve bulunamadı", receivedId: id });
+      .json({ error: "Coffee to delete not found", receivedId: id });
   }
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`☕ API running on port ${PORT}`));
