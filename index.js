@@ -67,24 +67,37 @@ app.post("/api/v1/coffee-drinks", (req, res) => {
 });
 
 // 3. PUT - Kahve Türünü Güncelle
+// index.js içindeki PUT kısmını bu şekilde değiştir:
 app.put("/api/v1/coffee-drinks/:id", (req, res) => {
   const { id } = req.params;
   const { name, icon, description } = req.body;
 
   let index = coffeeDrinks.findIndex((d) => d.id === id);
+
   if (index !== -1) {
     coffeeDrinks[index] = { id, name, icon, description };
-    res.json(coffeeDrinks[index]);
+    res.json(coffeeDrinks[index]); // Başarılıysa JSON dönüyor
   } else {
-    res.status(404).send("Kahve bulunamadı");
+    // HATA: .send yerine .json kullanıyoruz ki mobil uygulama çökmesin
+    res.status(404).json({ error: "Kahve bulunamadı", receivedId: id });
   }
 });
 
 // 4. DELETE - Kahve Türünü Sil
 app.delete("/api/v1/coffee-drinks/:id", (req, res) => {
   const { id } = req.params;
+  const initialLength = coffeeDrinks.length;
+
   coffeeDrinks = coffeeDrinks.filter((d) => d.id !== id);
-  res.status(204).send();
+
+  if (coffeeDrinks.length < initialLength) {
+    res.status(204).send(); // Başarıyla silindi
+  } else {
+    // Silinemediyse JSON hata dönüyoruz (Mobil uygulama çökmesin diye)
+    res
+      .status(404)
+      .json({ error: "Silinecek kahve bulunamadı", receivedId: id });
+  }
 });
 
 const PORT = 3000;
