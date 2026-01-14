@@ -71,22 +71,18 @@ app.put("/api/v1/coffee-drinks/:id", (req, res) => {
   const { id } = req.params;
   const { name, icon, description } = req.body;
 
-  let found = false;
-  coffeeDrinks = coffeeDrinks.map((d) => {
-    if (d.id === id) {
-      found = true;
-      return { id, name, icon, description };
-    }
-    return d;
-  });
+  const drink = coffeeDrinks.find((d) => d.id === id);
 
-  if (found) {
-    const updatedDrink = coffeeDrinks.find((d) => d.id === id);
-    console.log("🔄 Coffee updated:", updatedDrink);
-    res.json(updatedDrink);
-  } else {
-    res.status(404).json({ error: "Coffee not found", receivedId: id });
+  if (!drink) {
+    return res.status(404).json({ error: "Coffee not found" });
   }
+
+  drink.name = name;
+  drink.icon = icon;
+  drink.description = description;
+
+  console.log("🔄 Coffee updated:", drink);
+  res.json(drink);
 });
 
 // 4. DELETE - Remove Coffee Drink
