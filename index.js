@@ -13,42 +13,49 @@ let coffeeDrinks = [
     name: "Americano",
     icon: "☕",
     description: "Espresso and hot water",
+    strength: 4,
   },
   {
     id: uuidv4(),
     name: "Latte",
     icon: "🥛",
     description: "Espresso with steamed milk",
+    strength: 2,
   },
   {
     id: uuidv4(),
     name: "Cappuccino",
     icon: "🍶",
     description: "Espresso, milk foam, and steamed milk",
+    strength: 3,
   },
   {
     id: uuidv4(),
     name: "Flat White",
     icon: "⚪",
     description: "Smooth espresso with thin milk foam",
+    strength: 3,
   },
   {
     id: uuidv4(),
     name: "Mocha",
     icon: "🍫",
     description: "Espresso with chocolate and milk",
+    strength: 2,
   },
   {
     id: uuidv4(),
     name: "Turkish Coffee",
     icon: "🏺",
     description: "Traditional slow-brewed delight",
+    strength: 5,
   },
   {
     id: uuidv4(),
     name: "Cold Brew",
     icon: "🧊",
     description: "12-hour steeped cold refreshment",
+    strength: 4,
   },
 ];
 
@@ -59,8 +66,16 @@ app.get("/api/v1/coffee-drinks", (req, res) => {
 
 // 2. POST - Add New Coffee Drink
 app.post("/api/v1/coffee-drinks", (req, res) => {
-  const { name, icon, description } = req.body;
-  const newDrink = { id: uuidv4(), name, icon, description };
+  const { name, icon, description, strength } = req.body;
+
+  const newDrink = {
+    id: uuidv4(),
+    name,
+    icon,
+    description,
+    strength: strength ?? 3, // default
+  };
+
   console.log("📥 New coffee added:", newDrink);
   coffeeDrinks.push(newDrink);
   res.status(201).json(newDrink);
@@ -69,7 +84,7 @@ app.post("/api/v1/coffee-drinks", (req, res) => {
 // 3. PUT - Update Coffee Drink
 app.put("/api/v1/coffee-drinks/:id", (req, res) => {
   const { id } = req.params;
-  const { name, icon, description } = req.body;
+  const { name, icon, description, strength } = req.body;
 
   const drink = coffeeDrinks.find((d) => d.id === id);
 
@@ -80,6 +95,7 @@ app.put("/api/v1/coffee-drinks/:id", (req, res) => {
   drink.name = name;
   drink.icon = icon;
   drink.description = description;
+  drink.strength = strength;
 
   console.log("🔄 Coffee updated:", drink);
   res.json(drink);
