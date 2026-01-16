@@ -14,6 +14,8 @@ let coffeeDrinks = [
     icon: "☕",
     description: "Espresso and hot water",
     strength: 4,
+    sync_status: "synced",
+    sync_action_id: null,
   },
   {
     id: uuidv4(),
@@ -21,6 +23,8 @@ let coffeeDrinks = [
     icon: "🥛",
     description: "Espresso with steamed milk",
     strength: 2,
+    sync_status: "synced",
+    sync_action_id: null,
   },
   {
     id: uuidv4(),
@@ -28,6 +32,8 @@ let coffeeDrinks = [
     icon: "🍶",
     description: "Espresso, milk foam, and steamed milk",
     strength: 3,
+    sync_status: "synced",
+    sync_action_id: null,
   },
   {
     id: uuidv4(),
@@ -35,6 +41,8 @@ let coffeeDrinks = [
     icon: "⚪",
     description: "Smooth espresso with thin milk foam",
     strength: 3,
+    sync_status: "synced",
+    sync_action_id: null,
   },
   {
     id: uuidv4(),
@@ -42,6 +50,8 @@ let coffeeDrinks = [
     icon: "🍫",
     description: "Espresso with chocolate and milk",
     strength: 2,
+    sync_status: "synced",
+    sync_action_id: null,
   },
   {
     id: uuidv4(),
@@ -49,6 +59,8 @@ let coffeeDrinks = [
     icon: "🏺",
     description: "Traditional slow-brewed delight",
     strength: 5,
+    sync_status: "synced",
+    sync_action_id: null,
   },
   {
     id: uuidv4(),
@@ -56,6 +68,8 @@ let coffeeDrinks = [
     icon: "🧊",
     description: "12-hour steeped cold refreshment",
     strength: 4,
+    sync_status: "synced",
+    sync_action_id: null,
   },
 ];
 
@@ -74,6 +88,8 @@ app.post("/api/v1/coffee-drinks", (req, res) => {
     icon,
     description,
     strength: strength ?? 3, // default
+    sync_status: "synced",
+    sync_action_id: null, // Server data has no pending action
   };
 
   console.log("📥 New coffee added:", newDrink);
@@ -96,6 +112,8 @@ app.put("/api/v1/coffee-drinks/:id", (req, res) => {
   drink.icon = icon;
   drink.description = description;
   drink.strength = strength;
+  drink.sync_status = "synced";
+  drink.sync_action_id = null; // Server data has no pending action
 
   console.log("🔄 Coffee updated:", drink);
   res.json(drink);
